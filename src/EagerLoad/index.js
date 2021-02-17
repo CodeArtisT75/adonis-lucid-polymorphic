@@ -22,17 +22,16 @@ class EagerLoad extends BaseEagerLoad {
         const relationInstance = RelationsParser.getRelatedInstance(modelInstance, relation)
         this._applyRuntimeConstraints(relationInstance, attributes.callback)
         this._chainNested(relationInstance, attributes.nested)
-        const RelatedModel = relationInstance.RelatedModel
-        const groupName = RelatedModel.name
-        if (!result[groupName]) {
-          result[groupName] = {
+
+        if (!result[relation]) {
+          result[relation] = {
             relation,
             relationInstance: null,
             modelInstances: []
           }
         }
-        result[groupName].relationInstance = relationInstance
-        result[groupName].modelInstances.push(modelInstance)
+        result[relation].relationInstance = relationInstance
+        result[relation].modelInstances.push(modelInstance)
       })
       return result
     }, {})
@@ -52,8 +51,9 @@ class EagerLoad extends BaseEagerLoad {
      * set relationships for each relation on it. Same is done
      * for all parent records.
      */
-    _.each(Object.keys(groupedRelations), (groupName, index) => {
-      const { relation, modelInstances } = groupedRelations[groupName]
+    _.each(Object.keys(groupedRelations), (key, index) => {
+
+      const { relation, modelInstances } = groupedRelations[key]
       const relationGroups = relatedModelsGroup[index]
 
       /**
